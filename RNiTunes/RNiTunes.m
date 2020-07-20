@@ -154,6 +154,10 @@ RCT_EXPORT_METHOD(getTracks:(NSDictionary *)params successCallback:(RCTResponseS
         NSNumber  *searchPersistentId = [NSNumber numberWithInteger: [persistentId integerValue]];
         [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:persistentId forProperty:MPMediaItemPropertyPersistentID comparisonType:MPMediaPredicateComparisonContains]];
     }
+    if ([query objectForKey:@"playlistName"] != nil) {
+        NSString *playlistName = [query objectForKey:@"playlistName"];
+        [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:playlistName forProperty:MPMediaPlaylistPropertyName comparisonType:MPMediaPredicateComparisonContains]];
+    }
 
     NSMutableArray *mutableSongsToSerialize = [NSMutableArray array];
 

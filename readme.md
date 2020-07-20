@@ -136,6 +136,7 @@ Returns [TrackItem]
   - albumTitle
   - artist
   - genre
+  - playlistName
 - type: String
   - default to `''` and will return songs
   - `audiobooks` will return the list of audiobooks
