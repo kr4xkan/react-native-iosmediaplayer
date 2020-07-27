@@ -40,6 +40,7 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params successCallback:(RCTResponseS
     MPMediaQuery *artistsQuery = [MPMediaQuery albumsQuery];
     NSArray      *albumsArray      = [artistsQuery collections];
     NSMutableArray *mutableAlbumsToSerialize = [NSMutableArray array];
+    NSDictionary *options  = [RCTConvert NSDictionary:params[@"options"]];
 
     for (MPMediaItemCollection *mediaItemCollection in albumsArray) {
         NSDictionary *albumDictionary = [NSMutableDictionary dictionary];
@@ -53,7 +54,11 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params successCallback:(RCTResponseS
         MPMediaItemArtwork *artwork = [mediaItem valueForProperty: MPMediaItemPropertyArtwork];
         if (artwork != nil) {
             //NSLog(@"artwork %@", artwork);
-            UIImage *image = [artwork imageWithSize:CGSizeMake(100, 100)];
+            CGFloat artworkSize = 100;
+            if ([options objectForKey:@"artworkSize"] != nil) {
+                artworkSize = [[options objectForKey:@"artworkSize"] doubleValue];
+            }
+            UIImage *image = [artwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
             // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
             // http://stackoverflow.com/a/510444/185771
             base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
@@ -331,7 +336,6 @@ RCT_EXPORT_METHOD(getTracks:(NSDictionary *)params successCallback:(RCTResponseS
                     // NSLog(@"artwork %@", artwork);
                     CGFloat artworkSize = 100;
                     if ([options objectForKey:@"artworkSize"] != nil) {
-                        NSLog(@"OPTIONS FOUND MUFAKA");
                         artworkSize = [[options objectForKey:@"artworkSize"] doubleValue];
                     }
                     UIImage *image = [artwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
