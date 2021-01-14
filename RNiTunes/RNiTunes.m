@@ -486,9 +486,6 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
             NSArray *songs = [playlist items];
             for (MPMediaItem *song in songs) {
                 NSDictionary *songDictionary = [NSMutableDictionary dictionary];
-                NSString *songTitle =
-                [song valueForProperty: MPMediaItemPropertyTitle];
-                // NSLog (@"\t\t%@", songTitle);
 
                 NSString *title = [song valueForProperty: MPMediaItemPropertyTitle]; // filterable
                 NSString *albumTitle = [song valueForProperty: MPMediaItemPropertyAlbumTitle]; // filterable
@@ -496,6 +493,15 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                 NSString *genre = [song valueForProperty: MPMediaItemPropertyGenre]; // filterable
                 NSString *duration = [song valueForProperty: MPMediaItemPropertyPlaybackDuration];
                 NSString *playCount = [song valueForProperty: MPMediaItemPropertyPlayCount];
+                NSString *artwork = @"";
+                MPMediaItemArtwork *retrievedArtwork = [song valueForProperty: MPMediaItemPropertyArtwork];
+                
+                if (retrievedArtwork != nil) {
+                    CGFloat artworkSize = 100;
+                    UIImage *image = [retrievedArtwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
+                    NSString *base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
+                    artwork = base64;
+                }
 
                 if (title == nil) {
                     title = @"";
@@ -516,7 +522,7 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                     playCount = @"0";
                 }
                 
-                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title};
+                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"artwork": artwork};
 
                 
                 [mutableSongsToSerialize addObject:songDictionary];
