@@ -624,6 +624,46 @@ RCT_EXPORT_METHOD(playTracks:(NSArray *)tracks successCallback:(RCTResponseSende
     successCallback(@[[NSNull null]]);
 }
 
+RCT_EXPORT_METHOD(queueTracks:(NSArray *)tracks successCallback:(RCTResponseSenderBlock)successCallback) {
+    NSLog(@"%@ %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+    
+    NSMutableArray *playlist = [[NSMutableArray alloc] initWithCapacity:0];
+    
+    for(int i = 0; i < [tracks count]; i++) {
+        NSDictionary *query = [tracks objectAtIndex: i];
+        
+        MPMediaQuery *songsQuery = [MPMediaQuery songsQuery];
+        
+        
+        if ([query objectForKey:@"title"] != nil) {
+            NSString *searchTitle = [query objectForKey:@"title"];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchTitle forProperty:MPMediaItemPropertyTitle comparisonType:MPMediaPredicateComparisonContains]];
+        }
+        if ([query objectForKey:@"albumArtist"] != nil) {
+            NSString *searchalbumArtist = [query objectForKey:@"albumArtist"];
+            [songsQuery addFilterPredicate:[MPMediaPropertyPredicate predicateWithValue:searchalbumArtist forProperty:MPMediaItemPropertyAlbumArtist comparisonType:MPMediaPredicateComparisonContains]];
+        }
+        
+        for (MPMediaItem *song in songsQuery.items) {
+            
+            [playlist addObject: song];
+        
+        }
+    }
+    
+    if (playlist.count == 0) {
+        successCallback(@[@"Tracks have not been found"]);
+        return;
+    }
+
+    MPMediaItemCollection *currentQueue = [[MPMediaItemCollection alloc] initWithItems:playlist];
+    MPMusicPlayerMediaItemQueueDescriptor *queueDescriptor = [[MPMusicPlayerMediaItemQueueDescriptor alloc] initWithItemCollection:currentQueue];
+
+    [[MPMusicPlayerController applicationMusicPlayer] appendQueueDescriptor:queueDescriptor];
+    
+    successCallback(@[[NSNull null]]);
+}
+
 RCT_EXPORT_METHOD(play) {
     NSLog(@"%@ %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
