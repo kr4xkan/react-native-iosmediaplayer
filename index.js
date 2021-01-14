@@ -116,6 +116,30 @@ export default {
     });
   },
 
+  queueTracks: function (trackItems) {
+    return new Promise((resolve, reject) => {
+      if (Array.isArray(trackItems) === false || trackItems.length === 0) {
+        reject("No track item have been found");
+        return;
+      }
+      const isValid = trackItems.every(
+        (t) => t.hasOwnProperty("title") && t.hasOwnProperty("albumTitle")
+      );
+      if (isValid === false) {
+        reject(
+          "All track items should have [title] and [albumTitle] properties"
+        );
+      }
+      RNiTunes.queueTracks(trackItems || [], (err) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+    });
+  },
+
   seekTo: function (playingTime) {
     RNiTunes.seekTo(playingTime);
   },
