@@ -1,9 +1,22 @@
 import React from "react";
-import { NativeModules } from "react-native";
+import { NativeModules, NativeEventEmitter } from "react-native";
 
 const { RNiTunes } = NativeModules;
+const eventController = new NativeEventEmitter(RNiTunes);
 
 export default {
+  on: function (eventName, cb) {
+    eventController.addListener(eventName, cb);
+  },
+
+  off: function (eventName, cb) {
+    eventController.removeListener(eventName, cb);
+  },
+
+  observeNotificationChange: function (observe) {
+    RNiTunes.observeNotificationChange(observe);
+  },
+  
   getPlaylists: function (params) {
     return new Promise((resolve) => {
       RNiTunes.getPlaylists(params || {}, (playlists) => {

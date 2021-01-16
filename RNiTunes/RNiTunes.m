@@ -9,15 +9,15 @@
 #import "RNiTunes.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <React/RCTConvert.h>
+#import <React/RCTEventDispatcher.h>
 
 @interface RNiTunes()
+
+@property (nonatomic, assign) BOOL musicNotificationObserved;
 
 @end
 
 @implementation RNiTunes
-{
-
-}
 
 RCT_EXPORT_MODULE()
 
@@ -713,8 +713,28 @@ RCT_EXPORT_METHOD(stop) {
 
 
 RCT_EXPORT_METHOD(seekTo:(double)seconds) {
-    MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer] ;
-    musicPlayer.currentPlaybackTime = seconds ;
+    MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer];
+    musicPlayer.currentPlaybackTime = seconds;
+}
+
+RCT_EXPORT_METHOD(observeNotificationChange:(BOOL) observe) {
+    if (self.musicNotificationObserved == observe) {
+        return;
+    }
+    if (observe) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleChange:) name:MPMusicPlayerControllerPlaybackStateDidChangeNotification object:[MPMusicPlayerController applicationMusicPlayer]];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:MPMusicPlayerControllerPlaybackStateDidChangeNotification object:[MPMusicPlayerController applicationMusicPlayer]];
+    }
+    self.musicNotificationObserved = observe;
+}
+
+- (void)handleChange:(NSNotification *)notification {
+    [self sendEventWithName:@"test" body:@"VIDE"];
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"test"];
 }
 
 // http://stackoverflow.com/questions/22243854/encode-image-to-base64-get-a-invalid-base64-string-ios-using-base64encodedstri
