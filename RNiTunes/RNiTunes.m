@@ -83,28 +83,20 @@ RCT_EXPORT_METHOD(getCurrentTrack: (RCTResponseSenderBlock)successCallback) {
     MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer];
     MPMediaItem *song = [musicPlayer nowPlayingItem];
     
+    NSString *songId = [song valueForProperty: MPMediaItemPropertyPlaybackStoreID]; // filterable
     NSString *title = [song valueForProperty: MPMediaItemPropertyTitle]; // filterable
     NSString *albumTitle = [song valueForProperty: MPMediaItemPropertyAlbumTitle]; // filterable
     NSString *albumArtist = [song valueForProperty: MPMediaItemPropertyAlbumArtist]; // filterable
     NSString *genre = [song valueForProperty: MPMediaItemPropertyGenre]; // filterable
-    NSString *duration = [song valueForProperty: MPMediaItemPropertyPlaybackDuration];
+    float rawDuration = [[song valueForProperty:MPMediaItemPropertyPlaybackDuration] floatValue];
+    NSNumber *duration = [NSNumber numberWithInt:rawDuration*1000];
     NSString *playCount = [song valueForProperty: MPMediaItemPropertyPlayCount];
-    NSString *base64 = @"";
-    // http://stackoverflow.com/questions/25998621/mpmediaitemartwork-is-null-while-cover-is-available-in-itunes
-    MPMediaItemArtwork *artwork = [song valueForProperty: MPMediaItemPropertyArtwork];
-    if (artwork != nil) {
-        //NSLog(@"artwork %@", artwork);
-        UIImage *image = [artwork imageWithSize:CGSizeMake(100, 100)];
-        // http://www.12qw.ch/2014/12/tooltip-decoding-base64-images-with-chrome-data-url/
-        // http://stackoverflow.com/a/510444/185771
-        base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
-    }
     
-    double currentPlaybackTime = (double) [musicPlayer currentPlaybackTime];
-    NSNumber *currentPlayTime = [NSNumber numberWithInt:currentPlaybackTime];
+    float currentPlaybackTime = (float) [musicPlayer currentPlaybackTime];
+    NSNumber *currentPlayTime = [NSNumber numberWithInt:currentPlaybackTime*1000] ;
     
     NSDictionary *track = [NSDictionary dictionary];
-    track = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"artwork": base64};
+    track = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration": duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"currentPlayTime": currentPlayTime, @"id": songId};
     
     successCallback(@[[NSNull null], track]);
 }
@@ -486,14 +478,18 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
             NSArray *songs = [playlist items];
             for (MPMediaItem *song in songs) {
                 NSDictionary *songDictionary = [NSMutableDictionary dictionary];
-
+                
+                NSString *songId = [song valueForProperty: MPMediaItemPropertyPlaybackStoreID];
                 NSString *title = [song valueForProperty: MPMediaItemPropertyTitle]; // filterable
                 NSString *albumTitle = [song valueForProperty: MPMediaItemPropertyAlbumTitle]; // filterable
                 NSString *albumArtist = [song valueForProperty: MPMediaItemPropertyAlbumArtist]; // filterable
                 NSString *genre = [song valueForProperty: MPMediaItemPropertyGenre]; // filterable
-                NSString *duration = [song valueForProperty: MPMediaItemPropertyPlaybackDuration];
+                float rawDuration = [[song valueForProperty:MPMediaItemPropertyPlaybackDuration] floatValue];
+                NSNumber *duration = [NSNumber numberWithInt:rawDuration*1000];
                 NSString *playCount = [song valueForProperty: MPMediaItemPropertyPlayCount];
-                NSString *artwork = @"";
+                NSURL *tmpUrl = [song valueForProperty: MPMediaItemPropertyAssetURL];
+                NSString *assetUrl = [tmpUrl absoluteString];
+                /*NSString *artwork = @"";
                 MPMediaItemArtwork *retrievedArtwork = [song valueForProperty: MPMediaItemPropertyArtwork];
                 
                 if (retrievedArtwork != nil) {
@@ -501,8 +497,11 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                     UIImage *image = [retrievedArtwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
                     NSString *base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
                     artwork = base64;
-                }
+                }*/
 
+                if (songId == nil) {
+                    songId = @"0";
+                }
                 if (title == nil) {
                     title = @"";
                 }
@@ -516,13 +515,19 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                     genre = @"";
                 }
                 if (duration == nil) {
-                    duration = @"0";
+                    duration = 0;
                 }
                 if (playCount == nil) {
                     playCount = @"0";
                 }
+                AVAsset *asset = [AVAsset assetWithURL:tmpUrl];
+                if ([asset hasProtectedContent] == true) {
+                    assetUrl = @"PROTECTED";
+                } else {
+                    assetUrl = @"NO URL";
+                }
                 
-                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration":[duration isKindOfClass:[NSString class]] ? [NSNumber numberWithInt:[duration intValue]] : duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"artwork": artwork};
+                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration": duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"id": songId, @"assetUrl": assetUrl /*@"artwork": artwork*/};
 
                 
                 [mutableSongsToSerialize addObject:songDictionary];
@@ -697,11 +702,10 @@ RCT_EXPORT_METHOD(previous) {
 RCT_EXPORT_METHOD(getCurrentPlayTime:(RCTResponseSenderBlock)callback) {
     NSLog(@"%@ %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
 
-    MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer] ;
-    double nowPlayingItemDuration = [[[musicPlayer nowPlayingItem] valueForProperty:MPMediaItemPropertyPlaybackDuration]doubleValue];
-    double currentTime = (double) [musicPlayer currentPlaybackTime];
+    MPMusicPlayerController *musicPlayer = [MPMusicPlayerController applicationMusicPlayer];
+    float currentTime = (float) [musicPlayer currentPlaybackTime];
     
-    NSNumber *number = [NSNumber numberWithInt:currentTime] ;
+    NSNumber *number = [NSNumber numberWithInt:currentTime*1000];
     callback(@[number]);
 }
 
