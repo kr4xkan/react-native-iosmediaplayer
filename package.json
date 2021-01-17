@@ -1,6 +1,6 @@
 {
   "name": "react-native-iosmediaplayer",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "Search and play Apple Music/iTunes tracks",
   "main": "index.js",
   "repository": {
