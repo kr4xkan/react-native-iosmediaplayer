@@ -1,7 +1,7 @@
 {
   "name": "react-native-iosmediaplayer",
-  "version": "0.6.2",
-  "description": "Search and play Apple Music/iTunes tracks",
+  "version": "0.6.4",
+  "description": "Implementation of MPMusicPlayerController in React Native",
   "main": "index.js",
   "repository": {
     "type": "git",

@@ -9,8 +9,8 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.homepage     = 'n/a'
   s.authors      = { "kr4xkan" => "" }
-  s.source       = { :git => "https://github.com/kadiks/react-native-iosmediaplayer.git", :tag => 'v#{version}'}
+  s.source       = { :git => "https://github.com/kr4xkan/react-native-iosmediaplayer.git", :tag => 'v#{version}'}
   s.source_files = 'RNiTunes/*.{h,m}'
-  s.platform     = :ios, "10.3"
+  s.platform     = :ios, "8.0"
   s.dependency 'React-Core'
 end
