@@ -476,6 +476,7 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
 
         if (fields == nil || [fields containsObject: @"tracks"]) {
             NSArray *songs = [playlist items];
+            NSUInteger index = 0;
             for (MPMediaItem *song in songs) {
                 NSDictionary *songDictionary = [NSMutableDictionary dictionary];
                 
@@ -489,15 +490,18 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                 NSString *playCount = [song valueForProperty: MPMediaItemPropertyPlayCount];
                 NSURL *tmpUrl = [song valueForProperty: MPMediaItemPropertyAssetURL];
                 NSString *assetUrl = [tmpUrl absoluteString];
-                /*NSString *artwork = @"";
-                MPMediaItemArtwork *retrievedArtwork = [song valueForProperty: MPMediaItemPropertyArtwork];
-                
-                if (retrievedArtwork != nil) {
-                    CGFloat artworkSize = 100;
-                    UIImage *image = [retrievedArtwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
-                    NSString *base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
-                    artwork = base64;
-                }*/
+                NSString *artwork = @"";
+
+                if (index <= 3) {
+                    MPMediaItemArtwork *retrievedArtwork = [song valueForProperty: MPMediaItemPropertyArtwork];
+                    
+                    if (retrievedArtwork != nil) {
+                        CGFloat artworkSize = 100;
+                        UIImage *image = [retrievedArtwork imageWithSize:CGSizeMake(artworkSize, artworkSize)];
+                        NSString *base64 = [NSString stringWithFormat:@"%@%@", @"data:image/jpeg;base64,", [self imageToNSString:image]];
+                        artwork = base64;
+                    }
+                }
 
                 if (songId == nil) {
                     songId = @"0";
@@ -527,10 +531,11 @@ RCT_EXPORT_METHOD(getPlaylists:(NSDictionary *)params successCallback:(RCTRespon
                     assetUrl = @"NO URL";
                 }
                 
-                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration": duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"id": songId, @"assetUrl": assetUrl /*@"artwork": artwork*/};
+                songDictionary = @{@"albumTitle":albumTitle, @"albumArtist": albumArtist, @"duration": duration, @"genre":genre, @"playCount": [NSNumber numberWithInt:[playCount intValue]], @"title": title, @"id": songId, @"assetUrl": assetUrl, @"artwork": artwork};
 
-                
                 [mutableSongsToSerialize addObject:songDictionary];
+
+                index++;
             }
         }
 
