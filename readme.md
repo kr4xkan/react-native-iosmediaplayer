@@ -1,7 +1,7 @@
 # iTunes React Native
 
-[![npm version](https://badge.fury.io/js/react-native-itunes.svg)](https://badge.fury.io/js/react-native-itunes)
-![npm dl](https://img.shields.io/npm/dw/react-native-itunes.svg)
+[![npm version](https://badge.fury.io/js/react-native-iosmediaplayer.svg)](https://badge.fury.io/js/react-native-iosmediaplayer)
+![npm dl](https://img.shields.io/npm/dw/react-native-iosmediaplayer.svg)
 
 Access your iTunes library (iOS only)
 
@@ -13,10 +13,10 @@ If you have questions, ask them on Twitter [@kadiks](https://twitter.com/kadiks)
 
 ## Installation
 
-In the command line, first you need to install react-native-itunes:
+In the command line, first you need to install react-native-iosmediaplayer:
 
 ```shell
-npm install react-native-itunes --save
+npm install react-native-iosmediaplayer --save
 ```
 
 ### Permissions - iOS 10
@@ -28,7 +28,7 @@ npm install react-native-itunes --save
 #### With React Native 0.27+
 
 ```shell
-react-native link react-native-itunes
+react-native link react-native-iosmediaplayer
 ```
 
 #### With older versions of React Native
@@ -36,14 +36,14 @@ react-native link react-native-itunes
 You need [`rnpm`](https://github.com/rnpm/rnpm) (`npm install -g rnpm`)
 
 ```shell
-rnpm link react-native-itunes
+rnpm link react-native-iosmediaplayer
 ```
 
 ## Manually link
 
-In XCode, in the project navigator, right click Libraries ➜ Add Files to [your project's name] Go to node_modules ➜ react-native-itunes and add the .xcodeproj file
+In XCode, in the project navigator, right click Libraries ➜ Add Files to [your project's name] Go to node_modules ➜ react-native-iosmediaplayer and add the .xcodeproj file
 
-In XCode, in the project navigator, select your project. Add the lib*.a from the react-native-itunes project to your project's Build Phases ➜ Link Binary With Libraries Click .xcodeproj file you added before in the project navigator and go the Build Settings tab. Make sure 'All' is toggled on (instead of 'Basic'). Look for Header Search Paths and make sure it contains both ```$(SRCROOT)/../react-native/React``` and ```$(SRCROOT)/../../React``` - mark both as recursive.
+In XCode, in the project navigator, select your project. Add the lib*.a from the react-native-iosmediaplayer project to your project's Build Phases ➜ Link Binary With Libraries Click .xcodeproj file you added before in the project navigator and go the Build Settings tab. Make sure 'All' is toggled on (instead of 'Basic'). Look for Header Search Paths and make sure it contains both ```$(SRCROOT)/../react-native/React``` and ```$(SRCROOT)/../../React``` - mark both as recursive.
 
 Run your project (Cmd+R)
 
@@ -53,7 +53,7 @@ Note: it works on the device (it even shows on the cloud Apple Music saved songs
 
 # Get all tracks
 ```js
-import iTunes from 'react-native-itunes';
+import iTunes from 'react-native-iosmediaplayer';
 
 iTunes.getTracks().then((tracks) => {
   console.log(tracks);
@@ -64,7 +64,7 @@ iTunes.getTracks().then((tracks) => {
 # Get all playlists
 Beware, check other examples for better performances
 ```js
-import iTunes from 'react-native-itunes';
+import iTunes from 'react-native-iosmediaplayer';
 
 iTunes.getPlaylists().then(playlists => {
   console.log(playlists);
@@ -73,7 +73,7 @@ iTunes.getPlaylists().then(playlists => {
 
 # Play searched track
 ```js
-import iTunes from 'react-native-itunes';
+import iTunes from 'react-native-iosmediaplayer';
 
 iTunes.getTracks({
   query: {
