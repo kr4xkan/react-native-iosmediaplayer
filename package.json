@@ -1,11 +1,11 @@
 {
   "name": "react-native-itunes",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Search and play Apple Music/iTunes tracks",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kadiks/react-native-itunes.git"
+    "url": "git+https://github.com/kr4xkan/react-native-itunes.git"
   },
   "keywords": [
     "react-component",
@@ -19,9 +19,9 @@
   "author": "Jénaïc Cambré <me@jenaiccambre.com> (http://www.jenaiccambre.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kadiks/react-native-itunes/issues"
+    "url": "https://github.com/kr4xkan/react-native-itunes/issues"
   },
-  "homepage": "https://github.com/kadiks/react-native-itunes#readme",
+  "homepage": "https://github.com/kr4xkan/react-native-itunes#readme",
   "peerDependencies": {
     "react-native": ">=0.40"
   }
