@@ -1,8 +1,9 @@
 {
   "name": "react-native-iosmediaplayer",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Implementation of MPMusicPlayerController in React Native",
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kr4xkan/react-native-iosmediaplayer.git"
